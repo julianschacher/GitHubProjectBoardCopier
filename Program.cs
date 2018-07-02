@@ -11,46 +11,55 @@ namespace GitHubProjectBoardCopier
 
         static async Task MainAsync(string[] args)
         {
-            Console.WriteLine(">> Please enter your personal access token to access the project boards.");
-            var token = Console.ReadLine().Trim();
-            Console.Clear();
-
-            var client = new GitHubClient(new ProductHeaderValue("GitHubProjectBoardCopier"));
-            var basicAuth = new Credentials(token);
-            client.Credentials = basicAuth;
-
-            var projectBoardCopier = new ProjectBoardCopier(client);
-
-            while (true)
+            try
             {
-                Console.WriteLine(">> What do you want to do?");
-                System.Console.WriteLine("[0] Copy a project board. (default)");
-                System.Console.WriteLine("[1] Just get the contents of a project board.");
-                System.Console.WriteLine("[2] Create a new project board.");
-                System.Console.WriteLine("[9] Exit.");
-                var keyChar = Console.ReadKey().KeyChar;
-
-                if (keyChar == '0')
-                {
-                    await GetProjectBoardContentsAsync(projectBoardCopier);
-                    await CreateNewProjectBoardAsync(projectBoardCopier);
-                }
-                else if (keyChar == '1')
-                    await GetProjectBoardContentsAsync(projectBoardCopier);
-                else if (keyChar == '2')
-                    await CreateNewProjectBoardAsync(projectBoardCopier);
-                else if (keyChar == '9')
-                    break;
-
-                Console.WriteLine(">> What do you want to do?");
-                System.Console.WriteLine("[0] Continue.");
-                System.Console.WriteLine("[9] Exit.");
-                keyChar = Console.ReadKey().KeyChar;
-
-                if (keyChar == '9')
-                    break;
-
+                Console.WriteLine(">> Please enter your personal access token to access the project boards.");
+                var token = Console.ReadLine().Trim();
                 Console.Clear();
+
+                var client = new GitHubClient(new ProductHeaderValue("GitHubProjectBoardCopier"));
+                var basicAuth = new Credentials(token);
+                client.Credentials = basicAuth;
+
+                var projectBoardCopier = new ProjectBoardCopier(client);
+
+                while (true)
+                {
+                    Console.WriteLine(">> What do you want to do?");
+                    System.Console.WriteLine("[0] Copy a project board. (default)");
+                    System.Console.WriteLine("[1] Just get the contents of a project board.");
+                    System.Console.WriteLine("[2] Create a new project board.");
+                    System.Console.WriteLine("[9] Exit.");
+                    var keyChar = Console.ReadKey().KeyChar;
+
+                    if (keyChar == '0')
+                    {
+                        await GetProjectBoardContentsAsync(projectBoardCopier);
+                        await CreateNewProjectBoardAsync(projectBoardCopier);
+                    }
+                    else if (keyChar == '1')
+                        await GetProjectBoardContentsAsync(projectBoardCopier);
+                    else if (keyChar == '2')
+                        await CreateNewProjectBoardAsync(projectBoardCopier);
+                    else if (keyChar == '9')
+                        break;
+
+                    Console.WriteLine(">> What do you want to do?");
+                    System.Console.WriteLine("[0] Continue.");
+                    System.Console.WriteLine("[9] Exit.");
+                    keyChar = Console.ReadKey().KeyChar;
+
+                    if (keyChar == '9')
+                        break;
+
+                    Console.Clear();
+                }
+            }
+            catch (Exception e)
+            {
+                System.Console.WriteLine($"An error occured. Please read the following message to get some troubleshooting information and restart the program. If the message is weird or you think the program does something wrong, feel free to contact me (the creator of this program).");
+                System.Console.WriteLine("Message:");
+                System.Console.WriteLine(e.Message);
             }
         }
 
