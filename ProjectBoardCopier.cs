@@ -15,7 +15,8 @@ namespace GitHubProjectBoardCopier
         }
 
         public GitHubClient Client { get; set; }
-        private List<Column> CurrentProjectBoardColumns { get; set; }
+        private List<Column> CurrentProjectBoardColumns;
+        public (string, string) LastRepositoryAddress = ("", "");
 
         public ProjectBoardCopier(GitHubClient client)
         {
@@ -40,9 +41,21 @@ namespace GitHubProjectBoardCopier
                     Name = column.Name,
                     Cards = await Client.Repository.Project.Card.GetAll(column.Id)
                 });
+
+            LastRepositoryAddress = (repoOwner, repoName);
+
+            System.Console.WriteLine("Got project board contents.");
         }
 
-        public async Task CreateNewProjectBoard(string repoOwner, string repoName, string projectName)
+        public async Task CreateNewProjectBoardAsync(string projectName)
+        {
+            if (LastRepositoryAddress.Item1 == "" || LastRepositoryAddress.Item2 == "")
+                throw new Exception("There is no data of a last used repository.");
+
+            await CreateNewProjectBoardAsync(LastRepositoryAddress.Item1, LastRepositoryAddress.Item2, projectName);
+        }
+
+        public async Task CreateNewProjectBoardAsync(string repoOwner, string repoName, string projectName)
         {
             if (CurrentProjectBoardColumns == null)
                 throw new Exception("No stored project.");
@@ -63,7 +76,7 @@ namespace GitHubProjectBoardCopier
                 }
             }
 
-            System.Console.WriteLine("Created new project.");
+            System.Console.WriteLine("Created new project board.");
         }
     }
 }
