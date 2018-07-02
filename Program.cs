@@ -29,6 +29,7 @@ namespace GitHubProjectBoardCopier
                     System.Console.WriteLine("[0] Copy a project board. (default)");
                     System.Console.WriteLine("[1] Just get the contents of a project board.");
                     System.Console.WriteLine("[2] Create a new project board.");
+                    System.Console.WriteLine("[3] Get remaining API requests.");
                     System.Console.WriteLine("[9] Exit.");
                     var keyChar = Console.ReadKey().KeyChar;
 
@@ -43,6 +44,8 @@ namespace GitHubProjectBoardCopier
                         await CreateNewProjectBoardAsync(projectBoardCopier);
                     else if (keyChar == '9')
                         break;
+
+                    System.Console.WriteLine(await GetRateLimitInformation(client));
 
                     Console.WriteLine(">> What do you want to do?");
                     System.Console.WriteLine("[0] Continue.");
@@ -97,6 +100,17 @@ namespace GitHubProjectBoardCopier
                 var projectName = Console.ReadLine().Trim();
                 await projectBoardCopier.CreateNewProjectBoardAsync(projectName);
             }
+        }
+
+        public static async Task<string> GetRateLimitInformation(GitHubClient client)
+        {
+            var apiInfo = client.GetLastApiInfo();
+            var rateLimit = apiInfo?.RateLimit;
+
+            if (rateLimit == null)
+                rateLimit = (await client.Miscellaneous.GetRateLimits()).Resources.Core;
+
+            return $"You have {rateLimit.Remaining}/{rateLimit.Limit} API requests left. The requests reset in {rateLimit.Reset.UtcDateTime - DateTime.UtcNow}.";
         }
     }
 }
